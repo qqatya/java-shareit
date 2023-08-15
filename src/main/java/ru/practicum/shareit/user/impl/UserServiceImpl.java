@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateException(EMAIL_DUPLICATE.getValue());
         }
         User toBeUpdated = userRepository.getById(id)
-                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getValue()));
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getValue() + id));
         User user = userMapper.mapToModel(dto, toBeUpdated, id);
 
         log.info("updating userId = {}", id);
@@ -62,13 +62,13 @@ public class UserServiceImpl implements UserService {
             log.info("getting user by id = {}", id);
             return userMapper.mapToDto(result.get());
         }
-        throw new NotFoundException(USER_NOT_FOUND.getValue());
+        throw new NotFoundException(USER_NOT_FOUND.getValue() + id);
     }
 
     @Override
     public void deleteUserById(Long id) {
         if (!userRepository.doesExist(id)) {
-            throw new NotFoundException(USER_NOT_FOUND.getValue());
+            throw new NotFoundException(USER_NOT_FOUND.getValue() + id);
         }
         log.info("deleting user by id = {}", id);
         userRepository.deleteById(id);

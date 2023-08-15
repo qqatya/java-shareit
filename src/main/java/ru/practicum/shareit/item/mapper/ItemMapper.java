@@ -26,4 +26,14 @@ public class ItemMapper {
                 .build();
     }
 
+    public Item mapToModel(ItemDto dto, Long id, Long ownerId, Item existingItem) {
+        return Item.builder()
+                .id(id)
+                .ownerId(ownerId)
+                .name(dto.getName() != null ? dto.getName() : existingItem.getName())
+                .description(dto.getDescription() != null ? dto.getDescription() : existingItem.getDescription())
+                .available(dto.getAvailable() != null ? dto.getAvailable() : existingItem.getAvailable())
+                .build();
+    }
+
 }
