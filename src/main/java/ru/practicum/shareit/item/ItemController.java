@@ -60,4 +60,15 @@ public class ItemController {
         return itemService.getAllItems(ownerId);
     }
 
+    /**
+     * Поиск вещей
+     *
+     * @param text Текст для поиска по названию/описанию
+     * @return Список найденных вещей
+     */
+    @GetMapping("/search")
+    public List<ItemDto> searchItems(@RequestParam String text) {
+        return itemService.searchItems(text);
+    }
+
 }

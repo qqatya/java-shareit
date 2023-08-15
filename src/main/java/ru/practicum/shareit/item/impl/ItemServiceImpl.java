@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.validation.ItemValidator;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,6 +77,18 @@ public class ItemServiceImpl implements ItemService {
         }
         log.info("getting all items by ownerId = {}", ownerId);
         return itemRepository.getByOwnerId(ownerId).stream()
+                .map(itemMapper::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ItemDto> searchItems(String text) {
+        log.info("finding items by search criteria = {}", text);
+        if (text.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        return itemRepository.getByNameOrDescription(text).stream()
                 .map(itemMapper::mapToDto)
                 .collect(Collectors.toList());
     }

@@ -41,4 +41,11 @@ public interface ItemService {
      */
     List<ItemDto> getAllItems(Long ownerId);
 
+    /**
+     * Поиск вещей
+     *
+     * @param text Текст для поиска по названию/описанию
+     * @return Список найденных вещей
+     */
+    List<ItemDto> searchItems(String text);
 }

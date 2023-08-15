@@ -38,4 +38,12 @@ public interface ItemRepository {
      * @return Список вещей
      */
     List<Item> getByOwnerId(Long ownerId);
+
+    /**
+     * Получение всех вещей, содержащих в названии/описании текст из аргумента метода
+     *
+     * @param text Текст для поиска
+     * @return Список вещей
+     */
+    List<Item> getByNameOrDescription(String text);
 }

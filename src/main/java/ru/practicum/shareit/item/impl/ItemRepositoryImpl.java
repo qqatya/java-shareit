@@ -55,4 +55,13 @@ public class ItemRepositoryImpl implements ItemRepository {
                 .filter(i -> Objects.equals(i.getOwnerId(), ownerId))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Item> getByNameOrDescription(String text) {
+        return items.stream()
+                .filter(i -> (i.getName().toLowerCase().contains(text.toLowerCase())
+                        || i.getDescription().toLowerCase().contains(text.toLowerCase()))
+                        && i.getAvailable())
+                .collect(Collectors.toList());
+    }
 }
