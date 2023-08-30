@@ -1,32 +1,17 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
-@RestController
-@RequestMapping("/users")
-@RequiredArgsConstructor
-public class UserController {
-
-    private final UserService userService;
-
+public interface UserService {
     /**
      * Создание пользователя
      *
      * @param dto Объект, содержащий данные для создания
      * @return Созданный пользователь
      */
-    @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto dto) {
-        return userService.createUser(dto);
-    }
+    UserDto createUser(UserDto dto);
 
     /**
      * Обновление пользователя
@@ -35,11 +20,7 @@ public class UserController {
      * @param dto Объект, содержащий данные для обновления
      * @return Обновленный пользователь
      */
-    @PatchMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id,
-                              @Valid @RequestBody UserDto dto) {
-        return userService.updateUser(id, dto);
-    }
+    UserDto updateUser(Long id, UserDto dto);
 
     /**
      * Получение пользователя по идентификатору
@@ -47,29 +28,20 @@ public class UserController {
      * @param id Идентификатор пользователя
      * @return Пользователь
      */
-    @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
-    }
+    UserDto getUserById(Long id);
 
     /**
      * Удаление пользователя по идентификатору
      *
      * @param id Идентификатор пользователя
      */
-    @DeleteMapping("/{id}")
-    public void deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
-    }
+    void deleteUserById(Long id);
 
     /**
      * Получение всех пользователей
      *
      * @return Список пользователей
      */
-    @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
-    }
+    List<UserDto> getAllUsers();
 
 }
