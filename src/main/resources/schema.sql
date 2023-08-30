@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS users
+(
+    user_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name  VARCHAR(255)        NOT NULL,
+    email VARCHAR(320) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS items
+(
+    item_id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    owner_id    BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+    name        VARCHAR(255)  NOT NULL,
+    description VARCHAR(1000) NOT NULL,
+    available   BOOLEAN       NOT NULL
+);

@@ -22,12 +22,4 @@ public class UserMapper {
                 .email(user.getEmail())
                 .build();
     }
-
-    public User mapToModel(UserDto dto, User existingModel, Long id) {
-        return User.builder()
-                .id(id)
-                .name(dto.getName() != null ? dto.getName() : existingModel.getName())
-                .email(dto.getEmail() != null ? dto.getEmail() : existingModel.getEmail())
-                .build();
-    }
 }

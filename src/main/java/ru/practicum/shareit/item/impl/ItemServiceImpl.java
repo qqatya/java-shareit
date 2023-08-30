@@ -35,11 +35,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto dto, Long ownerId) {
-        if (!userRepository.doesExist(ownerId)) {
+        if (!userRepository.existsById(ownerId)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + ownerId);
         }
         itemValidator.validate(dto);
-        Item item = itemMapper.mapToModel(dto, ownerId);
+        Item item = itemMapper.mapToModel(dto, userRepository.findById(ownerId).get());
 
         log.info("creating new item");
         return itemMapper.mapToDto(itemRepository.save(item));
@@ -47,21 +47,21 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(Long ownerId, Long id, ItemDto dto) {
-        Item toBeUpdated = itemRepository.getById(id)
+        Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ITEM_NOT_FOUND.getValue() + id));
 
-        if (!Objects.equals(toBeUpdated.getOwnerId(), ownerId)) {
+        if (!Objects.equals(item.getOwner().getId(), ownerId)) {
             throw new SecurityException(EDITING_DENIED.getValue() + id);
         }
-        Item item = itemMapper.mapToModel(dto, id, ownerId, toBeUpdated);
+        item = itemMapper.mapToModel(item, dto);
 
         log.info("updating itemId = {}", id);
-        return itemMapper.mapToDto(itemRepository.update(item));
+        return itemMapper.mapToDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto getItemById(Long id) {
-        Optional<Item> result = itemRepository.getById(id);
+        Optional<Item> result = itemRepository.findById(id);
 
         if (result.isPresent()) {
             log.info("getting item by id = {}", id);
@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItems(Long ownerId) {
-        if (!userRepository.doesExist(ownerId)) {
+        if (!userRepository.existsById(ownerId)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + ownerId);
         }
         log.info("getting all items by ownerId = {}", ownerId);
@@ -88,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemRepository.getByNameOrDescription(text).stream()
+        return itemRepository.getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text).stream()
                 .map(itemMapper::mapToDto)
                 .collect(Collectors.toList());
     }

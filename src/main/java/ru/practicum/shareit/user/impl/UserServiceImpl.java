@@ -46,17 +46,18 @@ public class UserServiceImpl implements UserService {
         if (!duplicates.isEmpty() && !duplicates.contains(id)) {
             throw new DuplicateException(EMAIL_DUPLICATE.getValue());
         }
-        User toBeUpdated = userRepository.getById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getValue() + id));
-        User user = userMapper.mapToModel(dto, toBeUpdated, id);
 
+        user.setName(dto.getName() != null ? dto.getName() : user.getName());
+        user.setEmail(dto.getEmail() != null ? dto.getEmail() : user.getEmail());
         log.info("updating userId = {}", id);
-        return userMapper.mapToDto(userRepository.update(user));
+        return userMapper.mapToDto(userRepository.save(user));
     }
 
     @Override
     public UserDto getUserById(Long id) {
-        Optional<User> result = userRepository.getById(id);
+        Optional<User> result = userRepository.findById(id);
 
         if (result.isPresent()) {
             log.info("getting user by id = {}", id);
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long id) {
-        if (!userRepository.doesExist(id)) {
+        if (!userRepository.existsById(id)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + id);
         }
         log.info("deleting user by id = {}", id);
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAllUsers() {
         log.info("getting all users");
-        return userRepository.getAll().stream()
+        return userRepository.findAll().stream()
                 .map(userMapper::mapToDto)
                 .collect(Collectors.toList());
     }
