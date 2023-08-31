@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
@@ -28,10 +29,11 @@ public interface ItemService {
     /**
      * Получение вещи по идентификатору
      *
-     * @param id Идентификатор вещи
+     * @param id      Идентификатор вещи
+     * @param ownerId Идентификатор владельца
      * @return Вещь
      */
-    ItemDto getItemById(Long id);
+    ItemBookingDto getItemById(Long id, Long ownerId);
 
     /**
      * Получение всех вещей по идентификатору владельца
@@ -39,7 +41,7 @@ public interface ItemService {
      * @param ownerId Идентификатор владельца
      * @return Список вещей
      */
-    List<ItemDto> getAllItems(Long ownerId);
+    List<ItemBookingDto> getAllItems(Long ownerId);
 
     /**
      * Поиск вещей

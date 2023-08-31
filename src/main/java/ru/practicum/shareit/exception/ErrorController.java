@@ -28,20 +28,6 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Обработчик DuplicateException
-     *
-     * @param e Эксепшн
-     * @return Объект, содержащий сообщение об ошибке
-     */
-    @ExceptionHandler(DuplicateException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public ErrorInfo processDuplicateException(DuplicateException e) {
-        log.debug(e.getMessage());
-        return new ErrorInfo(e.getMessage());
-    }
-
-    /**
      * Обработчик IllegalArgumentException
      *
      * @param e Эксепшн
@@ -66,6 +52,62 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ErrorInfo processSecurityException(SecurityException e) {
         log.debug(e.getMessage());
+        return new ErrorInfo(e.getMessage());
+    }
+
+    /**
+     * Обработчик BookingPeriodException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(BookingPeriodException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorInfo processBookingPeriodException(BookingPeriodException e) {
+        log.debug(e.getMessage());
+        return new ErrorInfo(e.getMessage());
+    }
+
+    /**
+     * Обработчик UnsupportedStateException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(UnsupportedStateException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ErrorInfo processUnsupportedStateException(UnsupportedStateException e) {
+        log.debug(e.getMessage());
+        return new ErrorInfo(e.getMessage());
+    }
+
+    /**
+     * Обработчик UnsupportedOperationException
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(UnsupportedOperationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorInfo processUnsupportedOperationException(UnsupportedOperationException e) {
+        log.debug(e.getMessage());
+        return new ErrorInfo(e.getMessage());
+    }
+
+    /**
+     * Обработчик непредвиденных ошибок
+     *
+     * @param e Эксепшн
+     * @return Объект, содержащий сообщение об ошибке
+     */
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ErrorInfo processException(Exception e) {
+        log.error("Unexpected error: ", e);
         return new ErrorInfo(e.getMessage());
     }
 }

@@ -9,7 +9,6 @@ public class UserMapper {
 
     public User mapToModel(UserDto dto) {
         return User.builder()
-                .id(dto.getId())
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .build();
