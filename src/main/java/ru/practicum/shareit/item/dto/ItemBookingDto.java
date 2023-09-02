@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class ItemBookingDto {
@@ -18,4 +20,6 @@ public class ItemBookingDto {
     private BookingInfoDto lastBooking;
 
     private BookingInfoDto nextBooking;
+
+    private List<CommentDto> comments;
 }

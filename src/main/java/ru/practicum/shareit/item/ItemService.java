@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -50,4 +51,14 @@ public interface ItemService {
      * @return Список найденных вещей
      */
     List<ItemDto> searchItems(String text);
+
+    /**
+     * Создание комментария
+     *
+     * @param dto      Объект, содержащий текст комментария
+     * @param itemId   Идентификатор вещи
+     * @param authorId Идентификатор автора
+     * @return Объект, содержащий созданный комментарий
+     */
+    CommentDto createComment(CommentDto dto, Long itemId, Long authorId);
 }

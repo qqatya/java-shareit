@@ -32,13 +32,22 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findIntersections(Long itemId, LocalDateTime startDttm, LocalDateTime endDttm);
 
     /**
-     * Поиск последнего и ближайшего слудующего бронирования по идентификатору вещи
+     * Поиск последнего бронирования по идентификатору вещи
      *
      * @param itemId Идентификатор вещи
      * @return Список из бронирований по возрастанию даты начала
      */
-    @Query("SELECT b FROM Booking b WHERE b.item.id = ?1 ORDER BY b.startDttm")
-    List<Booking> findByItemId(Long itemId);
+    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1  AND status = 'APPROVED' and start_dttm < now() ORDER BY start_dttm DESC LIMIT 1", nativeQuery = true)
+    Optional<Booking> findLastByItemId(Long itemId);
+
+    /**
+     * Поиск ближайшего бронирования по идентификатору вещи
+     *
+     * @param itemId Идентификатор вещи
+     * @return Список из бронирований по возрастанию даты начала
+     */
+    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1  AND status = 'APPROVED' and start_dttm > now() ORDER BY start_dttm LIMIT 1", nativeQuery = true)
+    Optional<Booking> findNextByItemId(Long itemId);
 
     /**
      * Поиск бронирования по идентификатору и индентификатору владельца/инициатора брони
@@ -178,4 +187,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b from Booking b "
             + "WHERE b.status = 'REJECTED' AND b.item.owner.id = ?1 ORDER BY b.startDttm DESC")
     List<Booking> findRejectedByOwnerId(Long ownerId);
+
+    /**
+     * Проверка, была ли вещь забронирована пользователем
+     *
+     * @param itemId Идентификатор вещи
+     * @param userId Идентификатор пользователя
+     * @return true, если была бронь
+     */
+    @Query("SELECT count(b) > 0 FROM Booking b "
+            + "WHERE b.item.id = ?1 AND b.initiator.id = ?2 AND b.status != 'REJECTED' AND b.endDttm < now()")
+    Boolean wasItemBookedByUser(Long itemId, Long userId);
 }

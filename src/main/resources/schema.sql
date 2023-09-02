@@ -43,3 +43,19 @@ COMMENT ON COLUMN bookings.initiator_id IS 'Идентификатор созд�
 COMMENT ON COLUMN bookings.start_dttm IS 'Начало действия';
 COMMENT ON COLUMN bookings.end_dttm IS 'Окончание действия';
 COMMENT ON COLUMN bookings.status IS 'Статус';
+
+CREATE TABLE IF NOT EXISTS comments
+(
+    comment_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    text       VARCHAR(3000) NOT NULL,
+    item_id    BIGINT REFERENCES items (item_id) ON DELETE CASCADE,
+    author_id  BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+    create_dttm TIMESTAMP NOT NULL
+);
+
+COMMENT ON TABLE comments IS 'Комментарии';
+COMMENT ON COLUMN comments.comment_id IS 'Идентификатор комментария';
+COMMENT ON COLUMN comments.text IS 'Содержание';
+COMMENT ON COLUMN comments.item_id IS 'Идентификатор вещи';
+COMMENT ON COLUMN comments.author_id IS 'Идентификатор автора';
+COMMENT ON COLUMN comments.create_dttm IS 'Дата создания';

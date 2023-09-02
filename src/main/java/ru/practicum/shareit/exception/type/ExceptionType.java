@@ -19,7 +19,8 @@ public enum ExceptionType {
     INVALID_BOOKING_STATE("Статус %s не доступен для обработки"),
     UNSUPPORTED_STATE("Unknown state: %s"),
     ALREADY_APPROVED("Бронирование с id %s уже одобрено"),
-    BOOKING_BY_OWNER("Владелец вещи не может ее забронировать");
+    BOOKING_BY_OWNER("Владелец вещи не может ее забронировать"),
+    WASNT_BOOKED_BY_USER("Пользователь с id = %s не бронировал эту вещь");
 
     private final String value;
 }

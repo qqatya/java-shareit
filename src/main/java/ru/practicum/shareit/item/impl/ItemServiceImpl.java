@@ -5,13 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.CommentRepository;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +38,10 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
 
     private final BookingRepository bookingRepository;
+
+    private final CommentMapper commentMapper;
+
+    private final CommentRepository commentRepository;
 
     @Override
     public ItemDto createItem(ItemDto dto, Long ownerId) {
@@ -67,9 +76,12 @@ public class ItemServiceImpl implements ItemService {
             log.info("getting item by id = {}", id);
             Item item = result.get();
             if (item.getOwner().getId().equals(ownerId)) {
-                return itemMapper.mapToItemBookingDto(item, bookingRepository.findByItemId(item.getId()));
+
+                return itemMapper.mapToItemBookingDto(item, commentRepository.findByItemId(item.getId()),
+                        bookingRepository.findLastByItemId(item.getId()).orElse(null),
+                        bookingRepository.findNextByItemId(item.getId()).orElse(null));
             } else {
-                return itemMapper.mapToItemBookingDto(item);
+                return itemMapper.mapToItemBookingDto(item, commentRepository.findByItemId(item.getId()));
             }
         }
         throw new NotFoundException(ITEM_NOT_FOUND.getValue() + id);
@@ -82,7 +94,9 @@ public class ItemServiceImpl implements ItemService {
         }
         log.info("getting all items by ownerId = {}", ownerId);
         return itemRepository.getByOwnerId(ownerId).stream()
-                .map(i -> itemMapper.mapToItemBookingDto(i, bookingRepository.findByItemId(i.getId())))
+                .map(i -> itemMapper.mapToItemBookingDto(i, commentRepository.findByItemId(i.getId()),
+                        bookingRepository.findLastByItemId(i.getId()).orElse(null),
+                        bookingRepository.findNextByItemId(i.getId()).orElse(null)))
                 .collect(Collectors.toList());
     }
 
@@ -96,5 +110,21 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text).stream()
                 .map(itemMapper::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto createComment(CommentDto dto, Long itemId, Long authorId) {
+        if (bookingRepository.wasItemBookedByUser(itemId, authorId) && itemRepository.existsById(itemId)) {
+            Item item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new NotFoundException(ITEM_NOT_FOUND.getValue() + itemId));
+            User user = userRepository.findById(authorId)
+                    .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getValue() + authorId));
+
+            Comment comment = commentMapper.mapToModel(dto, item, user);
+            commentRepository.save(comment);
+
+            return commentMapper.mapToDto(commentRepository.save(comment));
+        }
+        throw new IllegalArgumentException(String.format(WASNT_BOOKED_BY_USER.getValue(), authorId));
     }
 }
