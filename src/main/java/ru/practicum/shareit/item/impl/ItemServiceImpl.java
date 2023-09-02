@@ -69,18 +69,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemBookingDto getItemById(Long id, Long ownerId) {
+    public ItemBookingDto getItemById(Long id, Long userId) {
         Optional<Item> result = itemRepository.findById(id);
 
         if (result.isPresent()) {
             log.info("getting item by id = {}", id);
             Item item = result.get();
-            if (item.getOwner().getId().equals(ownerId)) {
+            if (item.getOwner().getId().equals(userId)) {
+                log.info("item is owned by userId = {}", userId);
+                Long itemId = item.getId();
 
-                return itemMapper.mapToItemBookingDto(item, commentRepository.findByItemId(item.getId()),
-                        bookingRepository.findLastByItemId(item.getId()).orElse(null),
-                        bookingRepository.findNextByItemId(item.getId()).orElse(null));
+                return itemMapper.mapToItemBookingDto(item, commentRepository.findByItemId(itemId),
+                        bookingRepository.findLastByItemId(itemId).orElse(null),
+                        bookingRepository.findNextByItemId(itemId).orElse(null));
             } else {
+                log.info("item is not owned by userId = {}", userId);
                 return itemMapper.mapToItemBookingDto(item, commentRepository.findByItemId(item.getId()));
             }
         }
@@ -120,8 +123,8 @@ public class ItemServiceImpl implements ItemService {
             User user = userRepository.findById(authorId)
                     .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getValue() + authorId));
 
+            log.info("creating new comment for itemId = {}, authorId = {}", itemId, authorId);
             Comment comment = commentMapper.mapToModel(dto, item, user);
-            commentRepository.save(comment);
 
             return commentMapper.mapToDto(commentRepository.save(comment));
         }

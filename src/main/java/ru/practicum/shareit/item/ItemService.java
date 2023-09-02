@@ -31,10 +31,10 @@ public interface ItemService {
      * Получение вещи по идентификатору
      *
      * @param id      Идентификатор вещи
-     * @param ownerId Идентификатор владельца
+     * @param userId Идентификатор пользователя
      * @return Вещь
      */
-    ItemBookingDto getItemById(Long id, Long ownerId);
+    ItemBookingDto getItemById(Long id, Long userId);
 
     /**
      * Получение всех вещей по идентификатору владельца
