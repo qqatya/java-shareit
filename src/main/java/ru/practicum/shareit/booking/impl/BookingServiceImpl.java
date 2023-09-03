@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -26,6 +27,7 @@ import static ru.practicum.shareit.booking.model.type.BookingStatus.*;
 import static ru.practicum.shareit.exception.type.ExceptionType.*;
 
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -77,6 +79,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findByIdAndItemOwnerIdOrInitiatorId(bookingId, userId)
                 .orElseThrow(() -> new NotFoundException(BOOKING_NOT_FOUND.getValue() + bookingId));
@@ -86,6 +89,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getBookingsByUserId(BookingSearchType state, Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + userId);
@@ -105,6 +109,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getBookingsByItemOwner(BookingSearchType state, Long ownerId) {
         if (!userRepository.existsById(ownerId)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + ownerId);

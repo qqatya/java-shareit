@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.CommentRepository;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import static ru.practicum.shareit.exception.type.ExceptionType.*;
 
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -69,6 +71,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemBookingDto getItemById(Long id, Long userId) {
         Optional<Item> result = itemRepository.findById(id);
 
@@ -91,6 +94,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemBookingDto> getAllItems(Long ownerId) {
         if (!userRepository.existsById(ownerId)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + ownerId);
@@ -104,6 +108,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> searchItems(String text) {
         log.info("finding items by search criteria = {}", text);
         if (text.isBlank()) {
