@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ErrorInfo {
 
-    private String errorMessage;
+    private String error;
 }

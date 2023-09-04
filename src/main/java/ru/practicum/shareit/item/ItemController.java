@@ -1,9 +1,14 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.validation.ItemCreate;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +26,7 @@ public class ItemController {
      */
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                              @RequestBody ItemDto dto) {
+                              @Validated(ItemCreate.class) @RequestBody ItemDto dto) {
         return itemService.createItem(dto, ownerId);
     }
 
@@ -46,8 +51,9 @@ public class ItemController {
      * @return Вещь
      */
     @GetMapping("/{id}")
-    public ItemDto getItemById(@PathVariable Long id) {
-        return itemService.getItemById(id);
+    public ItemBookingDto getItemById(@PathVariable Long id,
+                                      @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+        return itemService.getItemById(id, ownerId);
     }
 
     /**
@@ -56,7 +62,7 @@ public class ItemController {
      * @return Список вещей
      */
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public List<ItemBookingDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.getAllItems(ownerId);
     }
 
@@ -69,6 +75,21 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
         return itemService.searchItems(text);
+    }
+
+    /**
+     * Создание комментария
+     *
+     * @param dto      Объект, содержащий текст комментария
+     * @param itemId   Идентификатор вещи
+     * @param authorId Идентификатор автора
+     * @return Объект, содержащий созданный комментарий
+     */
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@Valid @RequestBody CommentDto dto,
+                                    @PathVariable Long itemId,
+                                    @RequestHeader("X-Sharer-User-Id") Long authorId) {
+        return itemService.createComment(dto, itemId, authorId);
     }
 
 }

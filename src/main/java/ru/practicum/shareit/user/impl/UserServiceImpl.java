@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.DuplicateException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static ru.practicum.shareit.exception.type.ExceptionType.*;
+import static ru.practicum.shareit.exception.type.ExceptionType.USER_NOT_FOUND;
 
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -29,10 +29,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto dto) {
-        checkArgument(dto.getEmail() != null && !dto.getEmail().isBlank(), EMPTY_EMAIL.getValue());
-        if (!userRepository.getEmailDuplicates(dto.getEmail()).isEmpty()) {
-            throw new DuplicateException(EMAIL_DUPLICATE.getValue());
-        }
         User user = userMapper.mapToModel(dto);
 
         log.info("creating new user");
@@ -41,22 +37,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long id, UserDto dto) {
-        List<Long> duplicates = userRepository.getEmailDuplicates(dto.getEmail());
-
-        if (!duplicates.isEmpty() && !duplicates.contains(id)) {
-            throw new DuplicateException(EMAIL_DUPLICATE.getValue());
-        }
-        User toBeUpdated = userRepository.getById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getValue() + id));
-        User user = userMapper.mapToModel(dto, toBeUpdated, id);
 
+        user.setName(dto.getName() != null ? dto.getName() : user.getName());
+        user.setEmail(dto.getEmail() != null ? dto.getEmail() : user.getEmail());
         log.info("updating userId = {}", id);
-        return userMapper.mapToDto(userRepository.update(user));
+        return userMapper.mapToDto(userRepository.save(user));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto getUserById(Long id) {
-        Optional<User> result = userRepository.getById(id);
+        Optional<User> result = userRepository.findById(id);
 
         if (result.isPresent()) {
             log.info("getting user by id = {}", id);
@@ -67,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long id) {
-        if (!userRepository.doesExist(id)) {
+        if (!userRepository.existsById(id)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + id);
         }
         log.info("deleting user by id = {}", id);
@@ -75,9 +68,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
         log.info("getting all users");
-        return userRepository.getAll().stream()
+        return userRepository.findAll().stream()
                 .map(userMapper::mapToDto)
                 .collect(Collectors.toList());
     }
