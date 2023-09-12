@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.type.BookingSearchType;
 import ru.practicum.shareit.exception.UnsupportedStateException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import static ru.practicum.shareit.exception.type.ExceptionType.UNSUPPORTED_STAT
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -61,34 +64,42 @@ public class BookingController {
     }
 
     /**
-     * Получение списка всех бронирований текущего пользователя
+     * Постраничное получение списка всех бронирований текущего пользователя
      *
      * @param state  Статус бронирований
      * @param userId Идентификатор пользователя
+     * @param size   Количество элементов для отображения
+     * @param from   Индекс первого элемента
      * @return Список бронирований
      */
     @GetMapping
     public List<BookingDto> getBookingsByUserId(@RequestParam(defaultValue = "ALL") String state,
-                                                @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                @RequestHeader("X-Sharer-User-Id") Long userId,
+                                                @RequestParam(required = false, defaultValue = "10") @Min(1) Integer size,
+                                                @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from) {
         try {
-            return bookingService.getBookingsByUserId(BookingSearchType.valueOf(state), userId);
+            return bookingService.getBookingsByUserId(BookingSearchType.valueOf(state), userId, size, from);
         } catch (IllegalArgumentException e) {
             throw new UnsupportedStateException(String.format(UNSUPPORTED_STATE.getValue(), state));
         }
     }
 
     /**
-     * Получение списка бронирований для всех вещей по идентификатору владельца вещи
+     * Постраничное получение списка бронирований для всех вещей по идентификатору владельца вещи
      *
      * @param state   Статус бронирований
      * @param ownerId Идентификатор владельца
+     * @param size    Количество элементов для отображения
+     * @param from    Индекс первого элемента
      * @return Список бронирований
      */
     @GetMapping("/owner")
     public List<BookingDto> getBookingsByItemOwner(@RequestParam(defaultValue = "ALL") String state,
-                                                   @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                                                   @RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                                   @RequestParam(required = false, defaultValue = "10") @Min(1) Integer size,
+                                                   @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from) {
         try {
-            return bookingService.getBookingsByItemOwner(BookingSearchType.valueOf(state), ownerId);
+            return bookingService.getBookingsByItemOwner(BookingSearchType.valueOf(state), ownerId, size, from);
         } catch (IllegalArgumentException e) {
             throw new UnsupportedStateException(String.format(UNSUPPORTED_STATE.getValue(), state));
         }

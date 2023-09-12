@@ -66,7 +66,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(USER_NOT_FOUND.getValue() + userId);
         }
-        int page = from / size;
+        int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
 
         return mapToDtos(itemRequestRepository.findByUserIdNot(userId, pageable));

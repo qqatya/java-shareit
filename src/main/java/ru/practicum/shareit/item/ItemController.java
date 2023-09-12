@@ -9,11 +9,13 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.validation.ItemCreate;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -21,7 +23,8 @@ public class ItemController {
     /**
      * Создание вещи
      *
-     * @param dto Объект, содержащий данные для создания
+     * @param dto     Объект, содержащий данные для создания
+     * @param ownerId Идентификатор владельца
      * @return Созданная вещь
      */
     @PostMapping
@@ -33,8 +36,9 @@ public class ItemController {
     /**
      * Обновление вещи
      *
-     * @param id  Идентификатор вещи
-     * @param dto Объект, содержащий данные для обновления
+     * @param id      Идентификатор вещи
+     * @param dto     Объект, содержащий данные для обновления
+     * @param ownerId Идентификатор владельца
      * @return Обновленная вещь
      */
     @PatchMapping("/{id}")
@@ -47,7 +51,8 @@ public class ItemController {
     /**
      * Получение вещи по идентификатору
      *
-     * @param id Идентификатор вещи
+     * @param id      Идентификатор вещи
+     * @param ownerId Идентификатор владельца
      * @return Вещь
      */
     @GetMapping("/{id}")
@@ -57,24 +62,33 @@ public class ItemController {
     }
 
     /**
-     * Получение всех вещей
+     * Постраничное получение всех вещей
      *
+     * @param ownerId Идентификатор владельца
+     * @param size    Количество элементов для отображения
+     * @param from    Индекс первого элемента
      * @return Список вещей
      */
     @GetMapping
-    public List<ItemBookingDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        return itemService.getAllItems(ownerId);
+    public List<ItemBookingDto> getItems(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                         @RequestParam(defaultValue = "10") @Min(1) Integer size,
+                                         @RequestParam(defaultValue = "0") @Min(0) Integer from) {
+        return itemService.getItems(ownerId, size, from);
     }
 
     /**
-     * Поиск вещей
+     * Постраничный поиск вещей
      *
      * @param text Текст для поиска по названию/описанию
+     * @param size Количество элементов для отображения
+     * @param from Индекс первого элемента
      * @return Список найденных вещей
      */
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
-        return itemService.searchItems(text);
+    public List<ItemDto> searchItems(@RequestParam String text,
+                                     @RequestParam(defaultValue = "10") @Min(1) Integer size,
+                                     @RequestParam(defaultValue = "0") @Min(0) Integer from) {
+        return itemService.searchItems(text, size, from);
     }
 
     /**
