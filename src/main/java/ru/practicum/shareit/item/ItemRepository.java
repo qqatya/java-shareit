@@ -23,4 +23,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @return Список вещей
      */
     List<Item> getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(String name, String description);
+
+    /**
+     * Получение всех вещей по идентификатору запроса вещи
+     *
+     * @param requestId Идентификатор запроса вещи
+     * @return Список вещей
+     */
+    List<Item> getByRequestId(Long requestId);
 }

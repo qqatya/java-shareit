@@ -20,7 +20,8 @@ public enum ExceptionType {
     UNSUPPORTED_STATE("Unknown state: %s"),
     ALREADY_APPROVED("Бронирование с id %s уже одобрено"),
     BOOKING_BY_OWNER("Владелец вещи не может ее забронировать"),
-    WASNT_BOOKED_BY_USER("Пользователь с id = %s не бронировал эту вещь");
+    WASNT_BOOKED_BY_USER("Пользователь с id = %s не бронировал эту вещь"),
+    ITEM_REQUEST_NOT_FOUND("Не найден запрос вещи с id = ");
 
     private final String value;
 }
