@@ -39,7 +39,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Queryds
      * @param itemId Идентификатор вещи
      * @return Список из бронирований по возрастанию даты начала
      */
-    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1  AND status = 'APPROVED' and start_dttm < now() ORDER BY start_dttm DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1 "
+            + "AND status = 'APPROVED' and start_dttm < now() ORDER BY start_dttm DESC LIMIT 1", nativeQuery = true)
     Optional<Booking> findLastByItemId(Long itemId);
 
     /**
@@ -48,7 +49,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Queryds
      * @param itemId Идентификатор вещи
      * @return Список из бронирований по возрастанию даты начала
      */
-    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1  AND status = 'APPROVED' and start_dttm > now() ORDER BY start_dttm LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1 "
+            + "AND status = 'APPROVED' and start_dttm > now() ORDER BY start_dttm LIMIT 1", nativeQuery = true)
     Optional<Booking> findNextByItemId(Long itemId);
 
     /**
