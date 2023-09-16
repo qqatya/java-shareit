@@ -90,6 +90,19 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
+    public void updateItem_whenSharerUserIdIsNotOwner_thenForbidden() {
+        Mockito.when(itemService.updateItem(1L, 1L, itemDto))
+                .thenThrow(SecurityException.class);
+
+        mockMvc.perform(patch("/items/1")
+                        .header("X-Sharer-User-Id", 1)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemDto)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @SneakyThrows
     public void getItemById() {
         ItemBookingDto expected = ItemBookingDto.builder()
                 .id(1L)

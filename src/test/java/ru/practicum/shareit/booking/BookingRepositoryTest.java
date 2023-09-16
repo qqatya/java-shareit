@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static ru.practicum.shareit.booking.model.type.BookingStatus.APPROVED;
 import static ru.practicum.shareit.booking.model.type.BookingStatus.WAITING;
 
@@ -31,6 +30,8 @@ public class BookingRepositoryTest {
 
     private final ItemRepository itemRepository;
 
+    private User user1;
+
     private User user2;
 
     private Item item;
@@ -41,7 +42,7 @@ public class BookingRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        User user1 = userRepository.save(User.builder()
+        user1 = userRepository.save(User.builder()
                 .name("Ivan")
                 .email("ivan@test.com")
                 .build());
@@ -137,9 +138,16 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void wasItemBookedByUser() {
+    public void wasItemBookedByUser_whenWasBooked_thenReturnsTrue() {
         Boolean result = bookingRepository.wasItemBookedByUser(item.getId(), user2.getId());
 
         assertTrue(result);
+    }
+
+    @Test
+    public void wasItemBookedByUser_whenWasntBooked_thenReturnsFalse() {
+        Boolean result = bookingRepository.wasItemBookedByUser(item.getId(), user1.getId());
+
+        assertFalse(result);
     }
 }

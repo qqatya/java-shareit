@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exception.BookingPeriodException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStateException;
 
 import java.time.LocalDateTime;
@@ -68,6 +70,33 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
+    public void create_whenIntersectsOtherBookingPeriods_thenBadRequest() {
+        Mockito.when(bookingService.create(any(BookingDto.class), anyLong()))
+                .thenThrow(BookingPeriodException.class);
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    public void create_whenUserNotFound_thenNotFound() {
+        Mockito.when(bookingService.create(any(BookingDto.class), anyLong()))
+                .thenThrow(NotFoundException.class);
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof NotFoundException));
+    }
+
+    @Test
+    @SneakyThrows
     public void changeStatus() {
         BookingDto expected = BookingDto.builder()
                 .id(1L)
@@ -87,6 +116,17 @@ public class BookingControllerTest {
                 .getContentAsString();
 
         assertEquals(expected, objectMapper.readValue(response, BookingDto.class));
+    }
+
+    @Test
+    @SneakyThrows
+    public void changeStatus_whenAlreadyWasApproved_thenBadRequest() {
+        Mockito.when(bookingService.changeStatus(1L, true, 1L))
+                .thenThrow(UnsupportedOperationException.class);
+
+        mockMvc.perform(patch("/bookings/1?approved=true")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -126,6 +166,22 @@ public class BookingControllerTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(expected), response);
+    }
+
+    @Test
+    @SneakyThrows
+    public void getBookingsByUserId_whenIncorrectSize_thenInternalServerError() {
+        mockMvc.perform(get("/bookings?size=0&from=0")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @SneakyThrows
+    public void getBookingsByUserId_whenIncorrectFrom_thenInternalServerError() {
+        mockMvc.perform(get("/bookings?size=1&from=-1")
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test

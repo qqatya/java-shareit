@@ -25,8 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -234,6 +233,16 @@ public class ItemServiceTest {
     }
 
     @Test
+    public void getItems_whenUserNotFound_thenThrowsNotFoundException() {
+        Mockito.when(userRepository.existsById(anyLong())).thenReturn(false);
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemService.getItems(1L, 1, 0));
+        assertEquals("Не найден пользователь с id = 1", e.getMessage());
+
+    }
+
+    @Test
     public void createComment_whenUserAndItemFound_thenCreates() {
         Mockito.when(bookingRepository.wasItemBookedByUser(anyLong(), anyLong())).thenReturn(true);
         Mockito.when(itemRepository.existsById(anyLong())).thenReturn(true);
@@ -255,4 +264,40 @@ public class ItemServiceTest {
         assertEquals("Пользователь с id = 2 не бронировал эту вещь", e.getMessage());
     }
 
+    @Test
+    public void createComment_whenUserNotFound_thenThrowsNotFoundException() {
+        Mockito.when(bookingRepository.wasItemBookedByUser(anyLong(), anyLong())).thenReturn(true);
+        Mockito.when(itemRepository.existsById(anyLong())).thenReturn(true);
+        Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemService.createComment(commentDto, 1L, 2L));
+        assertEquals("Не найден пользователь с id = 2", e.getMessage());
+    }
+
+    @Test
+    public void createComment_whenItemNotFound_thenThrowsIllegalArgumentException() {
+        Mockito.when(itemRepository.existsById(anyLong())).thenReturn(false);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> itemService.createComment(commentDto, 1L, 2L));
+        assertEquals("Пользователь с id = 2 не бронировал эту вещь", e.getMessage());
+    }
+
+    @Test
+    public void searchItems() {
+        itemService.searchItems("Item", 1, 0);
+
+        verify(itemRepository, times(1))
+                .getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue("Item", "Item",
+                        PageRequest.of(0, 1));
+    }
+
+    @Test
+    public void searchItems_whenTextIsEmpty_thenReturnsEmptyList() {
+        List<ItemDto> result = itemService.searchItems("", 1, 0);
+
+        assertTrue(result.isEmpty());
+    }
 }

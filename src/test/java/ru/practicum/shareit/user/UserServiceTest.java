@@ -88,6 +88,15 @@ public class UserServiceTest {
     }
 
     @Test
+    public void deleteUserById_whenNotFound_thenThrowsNotFoundException() {
+        Mockito.when(userRepository.existsById(1L)).thenReturn(false);
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> userService.deleteUserById(1L));
+        assertEquals("Не найден пользователь с id = 1", e.getMessage());
+    }
+
+    @Test
     public void getAllUsers() {
         userService.getAllUsers();
 

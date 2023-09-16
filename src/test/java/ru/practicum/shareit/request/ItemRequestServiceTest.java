@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -147,5 +148,19 @@ public class ItemRequestServiceTest {
         NotFoundException e = assertThrows(NotFoundException.class,
                 () -> itemRequestService.getItemRequestById(1L, 1L));
         assertEquals("Не найден пользователь с id = 1", e.getMessage());
+    }
+
+    @Test
+    public void mapToDtos() {
+        Mockito.when(itemRepository.getByRequestId(anyLong())).thenReturn(List.of());
+        Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
+        ItemRequest withId = itemRequest;
+        withId.setId(1L);
+        List<ItemRequest> requests = List.of(withId, withId);
+        Mockito.when(itemRequestRepository.findByUserId(anyLong())).thenReturn(requests);
+
+        itemRequestService.getItemRequestsByUserId(1L);
+
+        verify(itemRepository, times(2)).getByRequestId(1L);
     }
 }

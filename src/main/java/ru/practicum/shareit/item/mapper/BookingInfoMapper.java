@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.dto.BookingInfoDto;
 @Component
 public class BookingInfoMapper {
 
-    BookingInfoDto mapToDto(Booking booking) {
+    public BookingInfoDto mapToDto(Booking booking) {
         if (booking == null) {
             return null;
         }
