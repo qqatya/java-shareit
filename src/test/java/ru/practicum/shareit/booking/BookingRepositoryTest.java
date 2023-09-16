@@ -40,7 +40,7 @@ public class BookingRepositoryTest {
     private Booking booking3;
 
     @BeforeEach
-    public void addBookings() {
+    public void setUp() {
         User user1 = userRepository.save(User.builder()
                 .name("Ivan")
                 .email("ivan@test.com")
@@ -79,7 +79,7 @@ public class BookingRepositoryTest {
     }
 
     @AfterEach
-    public void deleteBookings() {
+    public void tearDown() {
         bookingRepository.deleteAll();
         itemRepository.deleteAll();
         userRepository.deleteAll();

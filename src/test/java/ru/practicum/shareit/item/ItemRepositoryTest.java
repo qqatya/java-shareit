@@ -37,7 +37,7 @@ public class ItemRepositoryTest {
     private ItemRequest request;
 
     @BeforeEach
-    public void addItems() {
+    public void setUp() {
         user = userRepository.save(User.builder()
                 .name("Ivan")
                 .email("ivan@test.com")
@@ -66,7 +66,7 @@ public class ItemRepositoryTest {
     }
 
     @AfterEach
-    public void deleteBookings() {
+    public void tearDown() {
         itemRepository.deleteAll();
         userRepository.deleteAll();
     }
