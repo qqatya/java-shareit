@@ -118,7 +118,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestById_whenRequestFound_ThenReturnsTheRequest () {
+    public void getItemRequestById_whenRequestFound_ThenReturnsTheRequest() {
         ItemRequest expected = itemRequest;
         expected.setId(1L);
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
@@ -131,7 +131,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestById_whenRequestNotFound_ThenThrowsNotFoundException () {
+    public void getItemRequestById_whenRequestNotFound_ThenThrowsNotFoundException() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRequestRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -141,7 +141,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestById_whenUserNotFound_ThenThrowsNotFoundException () {
+    public void getItemRequestById_whenUserNotFound_ThenThrowsNotFoundException() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
