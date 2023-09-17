@@ -62,7 +62,7 @@ public class ItemRequestRepositoryTest {
     }
 
     @Test
-    public void findByUserId() {
+    public void findByUserIdReturnsItemRequests() {
         List<ItemRequest> expected = List.of(request1);
 
         List<ItemRequest> actual = itemRequestRepository.findByUserId(user1.getId());
@@ -71,7 +71,7 @@ public class ItemRequestRepositoryTest {
     }
 
     @Test
-    public void findByUserIdNot() {
+    public void findByUserIdNotReturnsItemRequestsOfAllUsersExceptUserId() {
         List<ItemRequest> expected = List.of(request2);
 
         List<ItemRequest> actual = itemRequestRepository

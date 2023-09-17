@@ -17,7 +17,7 @@ public class UserMapperTest {
     private final UserMapper userMapper;
 
     @Test
-    public void mapToModel() {
+    public void mapToModelCreatesModel() {
         UserDto dto = UserDto.builder()
                 .name("Ivan")
                 .email("ivan@test.com")
@@ -30,7 +30,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void mapToDto() {
+    public void mapToDtoCreatesDto() {
         User user = User.builder()
                 .id(1L)
                 .name("Ivan")

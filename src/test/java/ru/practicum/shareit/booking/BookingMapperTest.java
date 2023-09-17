@@ -54,7 +54,7 @@ public class BookingMapperTest {
             .build();
 
     @Test
-    public void testMappingToDto() {
+    public void mapToDtoCreatesDto() {
         Booking booking = Booking.builder()
                 .id(1L)
                 .item(item)
@@ -88,7 +88,7 @@ public class BookingMapperTest {
     }
 
     @Test
-    public void testMappingToModel() {
+    public void mapToModelCreatesModel() {
         BookingDto dto = BookingDto.builder()
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plusDays(1))

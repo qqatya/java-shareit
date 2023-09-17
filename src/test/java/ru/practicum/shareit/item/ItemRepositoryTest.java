@@ -72,7 +72,7 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    public void getByOwnerId() {
+    public void getByOwnerIdReturnsItems() {
         List<Item> expected = List.of(item1, item2);
 
         List<Item> actual = itemRepository.getByOwnerId(user.getId(), PageRequest.of(0, 2));
@@ -81,7 +81,7 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    public void getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue_whenCamera_thenReturnItemId1() {
+    public void getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrueReturnsItemId1() {
         List<Item> expected = List.of(item1);
 
         List<Item> actual = itemRepository
@@ -92,7 +92,7 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    public void getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue_whenRed_thenReturnItemId2() {
+    public void getByNameOrDescriptionContainingIgnoreCaseAndAvailableTrueReturnsItemId2() {
         List<Item> expected = List.of(item2);
 
         List<Item> actual = itemRepository
@@ -103,7 +103,7 @@ public class ItemRepositoryTest {
     }
 
     @Test
-    public void getByRequestId() {
+    public void getByRequestIdReturnsItemId2() {
         List<Item> expected = List.of(item2);
 
         List<Item> actual = itemRepository.getByRequestId(request.getId());

@@ -18,14 +18,14 @@ public class BookingInfoMapperTest {
     private final BookingInfoMapper bookingInfoMapper;
 
     @Test
-    public void mapToDto_whenBookingIsNull_thenReturnsNull() {
+    public void mapToDtoReturnsNull() {
         BookingInfoDto actual = bookingInfoMapper.mapToDto(null);
 
         assertNull(actual);
     }
 
     @Test
-    public void mapToDto_whenBookingIsNotNull_thenCreatesDto() {
+    public void mapToDtoCreatesDto() {
         Booking booking = Booking.builder()
                 .id(1L)
                 .initiator(User.builder().id(1L).build())

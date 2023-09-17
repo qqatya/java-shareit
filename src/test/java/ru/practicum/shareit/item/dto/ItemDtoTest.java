@@ -17,7 +17,7 @@ public class ItemDtoTest {
 
     @Test
     @SneakyThrows
-    void testItemDto() {
+    void convertItemDtoToJsonValuesAsExpected() {
         ItemDto dto = ItemDto.builder()
                 .id(1L)
                 .name("Name")

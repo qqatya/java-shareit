@@ -48,7 +48,7 @@ public class ItemRequestMapperTest {
             .build();
 
     @Test
-    public void testMappingToModel() {
+    public void mapToModelCreatesModel() {
         ItemRequest actual = itemRequestMapper.mapToModel(dto, user);
 
         assertEquals(user, actual.getUser());
@@ -57,7 +57,7 @@ public class ItemRequestMapperTest {
     }
 
     @Test
-    public void testMappingToDto() {
+    public void mapToDtoCreatesDto() {
         ItemRequestDto actual = itemRequestMapper.mapToDto(request);
 
         assertEquals(request.getId(), actual.getId());
@@ -67,7 +67,7 @@ public class ItemRequestMapperTest {
     }
 
     @Test
-    public void testMappingToDto_withItems() {
+    public void mapToDtoCreatesDtoWithItems() {
         List<Item> items = List.of(Item.builder().id(1L).owner(user).name("Camera").description("Analog camera")
                 .available(true).build(), Item.builder().id(2L).owner(user).name("Camera").description("Analog camera")
                 .available(true).build());

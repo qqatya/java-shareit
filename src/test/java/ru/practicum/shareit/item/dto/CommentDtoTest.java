@@ -19,7 +19,7 @@ public class CommentDtoTest {
 
     @Test
     @SneakyThrows
-    void testCommentDto() {
+    void convertCommentDtoToJsonValuesAsExpected() {
         CommentDto dto = CommentDto.builder()
                 .id(1L)
                 .text("Comment text")

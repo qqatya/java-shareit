@@ -19,7 +19,7 @@ public class ItemBookingDtoTest {
 
     @Test
     @SneakyThrows
-    void testCommentDto() {
+    void convertCommentDtoToJsonValuesAsExpected() {
         ItemBookingDto dto = ItemBookingDto.builder()
                 .id(1L)
                 .name("Name")

@@ -19,6 +19,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.util.Header.SHARER_USER_ID;
 
 @WebMvcTest(ItemRequestController.class)
 public class ItemRequestControllerTest {
@@ -38,7 +39,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    public void createItemRequest() {
+    public void createItemRequestStatusCodeIsOkAndResponseAsExpected() {
         ItemRequestDto expected = ItemRequestDto.builder()
                 .id(1L)
                 .description(requestDto.getDescription())
@@ -47,7 +48,7 @@ public class ItemRequestControllerTest {
         Mockito.when(itemRequestService.createItemRequest(1L, requestDto)).thenReturn(expected);
 
         String response = mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
@@ -60,7 +61,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    public void getItemRequestsOfCurrentUser() {
+    public void getItemRequestsOfCurrentUserStatusCodeIsOkAndResponseAsExpected() {
         ItemRequestDto dto = ItemRequestDto.builder()
                 .id(1L)
                 .description(requestDto.getDescription())
@@ -70,7 +71,7 @@ public class ItemRequestControllerTest {
         Mockito.when(itemRequestService.getItemRequestsByUserId(1L)).thenReturn(expected);
 
         String response = mockMvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -82,7 +83,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    public void getItemRequestsOfOtherUsers() {
+    public void getItemRequestsOfOtherUsersStatusCodeIsOkAndResponseAsExpected() {
         ItemRequestDto dto = ItemRequestDto.builder()
                 .id(1L)
                 .description(requestDto.getDescription())
@@ -93,7 +94,7 @@ public class ItemRequestControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/requests/all?page=0&size=3")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -105,7 +106,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    public void getItemRequestById() {
+    public void getItemRequestByIdStatusCodeIsOkAndResponseAsExpected() {
         ItemRequestDto expected = ItemRequestDto.builder()
                 .id(1L)
                 .description(requestDto.getDescription())
@@ -114,7 +115,7 @@ public class ItemRequestControllerTest {
         Mockito.when(itemRequestService.getItemRequestById(1L, 1L)).thenReturn(expected);
 
         String response = mockMvc.perform(get("/requests/1")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

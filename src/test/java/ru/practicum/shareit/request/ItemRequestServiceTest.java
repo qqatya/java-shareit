@@ -62,7 +62,7 @@ public class ItemRequestServiceTest {
             .build();
 
     @Test
-    public void createItemRequest_whenUserFound_thenCreates() {
+    public void createItemRequestSavesRequest() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         Mockito.when(itemRequestMapper.mapToModel(requestDto, user)).thenReturn(itemRequest);
@@ -73,7 +73,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void createItemRequest_whenUserNotFound_thenThrowsNotFoundException() {
+    public void createItemRequestThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -82,7 +82,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestByUserId_whenUserFound_thenReturnsTheRequests() {
+    public void getItemRequestByUserIdReturnsRequests() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
 
         itemRequestService.getItemRequestsByUserId(1L);
@@ -91,7 +91,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestByUserId_whenUserNotFound_thenThrowsNotFoundException() {
+    public void getItemRequestByUserIdThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -100,7 +100,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestsOfOtherUsers_whenUserFound_thenReturnsTheRequests() {
+    public void getItemRequestsOfOtherUsersReturnsRequests() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
 
         itemRequestService.getItemRequestsOfOtherUsers(1L, 2, 0);
@@ -110,7 +110,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestsOfOtherUsers_whenUserNotFound_thenThrowsNotFoundException() {
+    public void getItemRequestsOfOtherUsersThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -119,7 +119,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestById_whenRequestFound_ThenReturnsTheRequest() {
+    public void getItemRequestByIdReturnsRequest() {
         ItemRequest expected = itemRequest;
         expected.setId(1L);
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
@@ -132,7 +132,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestById_whenRequestNotFound_ThenThrowsNotFoundException() {
+    public void getItemRequestByIdThrowsNotFoundExceptionWhenRequestNotFound() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRequestRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -142,7 +142,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void getItemRequestById_whenUserNotFound_ThenThrowsNotFoundException() {
+    public void getItemRequestByIdThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -151,7 +151,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    public void mapToDtos() {
+    public void mapToDtosCreatesDtos() {
         Mockito.when(itemRepository.getByRequestId(anyLong())).thenReturn(List.of());
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
         ItemRequest withId = itemRequest;

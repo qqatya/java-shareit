@@ -87,7 +87,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void findIntersections() {
+    public void findIntersectionsReturnsIntersections() {
         Long itemId = item.getId();
         LocalDateTime expectedStart = booking1.getStartDttm();
         LocalDateTime expectedEnd = booking1.getEndDttm();
@@ -102,7 +102,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void findLastByItemId() {
+    public void findLastByItemIdReturnsLastBooking() {
         Long itemId = item.getId();
         Optional<Booking> actualOpt = bookingRepository.findLastByItemId(itemId);
 
@@ -114,7 +114,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void findNextByItemId() {
+    public void findNextByItemIdReturnsNextBooking() {
         Long itemId = item.getId();
         Optional<Booking> actualOpt = bookingRepository.findNextByItemId(itemId);
 
@@ -126,7 +126,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void findByIdAndItemOwnerIdOrInitiatorId() {
+    public void findByIdAndItemOwnerIdOrInitiatorIdReturnsBooking() {
         Optional<Booking> actualOpt = bookingRepository
                 .findByIdAndItemOwnerIdOrInitiatorId(booking1.getId(), user2.getId());
 
@@ -138,14 +138,14 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void wasItemBookedByUser_whenWasBooked_thenReturnsTrue() {
+    public void wasItemBookedByUserReturnsTrueWhenWasBooked() {
         Boolean result = bookingRepository.wasItemBookedByUser(item.getId(), user2.getId());
 
         assertTrue(result);
     }
 
     @Test
-    public void wasItemBookedByUser_whenWasntBooked_thenReturnsFalse() {
+    public void wasItemBookedByUserReturnsFalseWhenWasntBooked() {
         Boolean result = bookingRepository.wasItemBookedByUser(item.getId(), user1.getId());
 
         assertFalse(result);

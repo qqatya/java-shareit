@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.shareit.booking.model.type.BookingSearchType.ALL;
 import static ru.practicum.shareit.booking.model.type.BookingStatus.APPROVED;
+import static ru.practicum.shareit.util.Header.SHARER_USER_ID;
 
 @WebMvcTest(BookingController.class)
 public class BookingControllerTest {
@@ -46,7 +47,7 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void create() {
+    public void createStatusCodeIsOkAndResponseAsExpected() {
         BookingDto expected = BookingDto.builder()
                 .id(1L)
                 .itemId(dto.getItemId())
@@ -57,7 +58,7 @@ public class BookingControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -70,12 +71,12 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void create_whenIntersectsOtherBookingPeriods_thenBadRequest() {
+    public void createStatusCodeIsBadRequest() {
         Mockito.when(bookingService.create(any(BookingDto.class), anyLong()))
                 .thenThrow(BookingPeriodException.class);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
@@ -83,12 +84,12 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void create_whenUserNotFound_thenNotFound() {
+    public void createStatusCodeIsNotFound() {
         Mockito.when(bookingService.create(any(BookingDto.class), anyLong()))
                 .thenThrow(NotFoundException.class);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound())
@@ -97,7 +98,7 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void changeStatus() {
+    public void changeStatusStatusCodeIsOkAndResponseAsExpected() {
         BookingDto expected = BookingDto.builder()
                 .id(1L)
                 .itemId(dto.getItemId())
@@ -109,7 +110,7 @@ public class BookingControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(patch("/bookings/1?approved=true")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -120,18 +121,18 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void changeStatus_whenAlreadyWasApproved_thenBadRequest() {
+    public void changeStatusStatusCodeIsBadRequest() {
         Mockito.when(bookingService.changeStatus(1L, true, 1L))
                 .thenThrow(UnsupportedOperationException.class);
 
         mockMvc.perform(patch("/bookings/1?approved=true")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @SneakyThrows
-    public void getBookingById() {
+    public void getBookingByIdStatusCodeIsOkAndResponseAsExpected() {
         BookingDto expected = BookingDto.builder()
                 .id(1L)
                 .itemId(dto.getItemId())
@@ -142,7 +143,7 @@ public class BookingControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/bookings/1")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -153,13 +154,13 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void getBookingsByUserId() {
+    public void getBookingsByUserIdStatusCodeIsOkAndResponseAsExpected() {
         List<BookingDto> expected = List.of(dto, dto, dto);
         Mockito.when(bookingService.getBookingsByUserId(ALL, 1L, 3, 0))
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/bookings?size=3&from=0")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -170,29 +171,29 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void getBookingsByUserId_whenIncorrectSize_thenInternalServerError() {
+    public void getBookingsByUserIdIncorrectSizeStatusCodeIsInternalServerError() {
         mockMvc.perform(get("/bookings?size=0&from=0")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isInternalServerError());
     }
 
     @Test
     @SneakyThrows
-    public void getBookingsByUserId_whenIncorrectFrom_thenInternalServerError() {
+    public void getBookingsByUserIdIncorrectFromStatusCodeIsInternalServerError() {
         mockMvc.perform(get("/bookings?size=1&from=-1")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isInternalServerError());
     }
 
     @Test
     @SneakyThrows
-    public void getBookingsByUserId_whenUnsupportedState_thenThrowsUnsupportedStateException() {
+    public void getBookingsByUserIdStatusCodeIsInternalServerErrorAndUnsupportedStateException() {
         List<BookingDto> expected = List.of(dto, dto, dto);
         Mockito.when(bookingService.getBookingsByUserId(ALL, 1L, 3, 0))
                 .thenReturn(expected);
 
         mockMvc.perform(get("/bookings?state=NONE&size=3&from=0")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isInternalServerError())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnsupportedStateException))
                 .andExpect(result -> assertEquals("Unknown state: NONE",
@@ -201,13 +202,13 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void getBookingsByItemOwner() {
+    public void getBookingsByItemOwnerStatusCodeIsOkAndResponseAsExpected() {
         List<BookingDto> expected = List.of(dto, dto, dto);
         Mockito.when(bookingService.getBookingsByItemOwner(ALL, 1L, 3, 0))
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/bookings/owner?size=3&from=0")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -218,13 +219,13 @@ public class BookingControllerTest {
 
     @Test
     @SneakyThrows
-    public void getBookingsByItemOwner_whenUnsupportedState_thenThrowsUnsupportedStateException() {
+    public void getBookingsByItemOwnerStatusCodeIsInternalServerErrorAndUnsupportedStateException() {
         List<BookingDto> expected = List.of(dto, dto, dto);
         Mockito.when(bookingService.getBookingsByItemOwner(ALL, 1L, 3, 0))
                 .thenReturn(expected);
 
         mockMvc.perform(get("/bookings/owner?state=NONE&size=3&from=0")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isInternalServerError())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnsupportedStateException))
                 .andExpect(result -> assertEquals("Unknown state: NONE",

@@ -20,7 +20,7 @@ public class BookingInfoDtoTest {
 
     @Test
     @SneakyThrows
-    void testBookingInfoDto() {
+    void convertBookingInfoDtoToJsonValuesAsExpected() {
         BookingInfoDto dto = BookingInfoDto.builder()
                 .id(1L)
                 .bookerId(1L)

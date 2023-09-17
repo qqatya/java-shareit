@@ -37,7 +37,7 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
-    public void createUser() {
+    public void createUserStatusCodeIsOkAndResponseAsExpected() {
         UserDto expected = UserDto.builder()
                 .id(1L)
                 .name("Ivan")
@@ -58,7 +58,7 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
-    public void updateItem() {
+    public void updateUserStatusCodeIsOkAndResponseAsExpected() {
         UserDto toUpdate = userDto;
         toUpdate.setName("Ivan Ivanov");
         UserDto expected = UserDto.builder()
@@ -80,7 +80,7 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
-    public void getItemById() {
+    public void getUserByIdStatusCodeIsOkAndResponseAsExpected() {
         UserDto expected = UserDto.builder()
                 .id(1L)
                 .name("Ivan")
@@ -100,14 +100,14 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
-    public void deleteUserById() {
+    public void deleteUserByIdStatusCodeIsOk() {
         mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @SneakyThrows
-    public void getAllUsers() {
+    public void getAllUsersStatusCodeIsOkAndResponseAsExpected() {
         List<UserDto> expected = List.of(userDto, userDto);
         Mockito.when(userService.getAllUsers())
                 .thenReturn(expected);

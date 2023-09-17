@@ -54,14 +54,14 @@ public class CommentMapperTest {
             .build();
 
     @Test
-    public void testMappingToDto() {
+    public void mapToDtoCreatesDto() {
         CommentDto dto = commentMapper.mapToDto(comment);
 
         assertEquals(commentDto, dto);
     }
 
     @Test
-    public void testMappingToModel() {
+    public void mapToModelCreatesModel() {
         Comment actual = commentMapper.mapToModel(commentDto, item, author);
 
         assertEquals(comment.getText(), actual.getText());

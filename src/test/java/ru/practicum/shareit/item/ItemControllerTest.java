@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.util.Header.SHARER_USER_ID;
 
 @WebMvcTest(ItemController.class)
 public class ItemControllerTest {
@@ -41,7 +42,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void createItem() {
+    public void createItemStatusCodeIsOkAndResponseAsExpected() {
         ItemDto expected = ItemDto.builder()
                 .id(1L)
                 .name("Camera")
@@ -51,7 +52,7 @@ public class ItemControllerTest {
         Mockito.when(itemService.createItem(itemDto, 1L)).thenReturn(expected);
 
         String response = mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
@@ -64,7 +65,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void updateItem() {
+    public void updateItemStatusCodeIsOkAndResponseAsExpected() {
         ItemDto toUpdate = itemDto;
         toUpdate.setName("Updated camera");
         toUpdate.setAvailable(false);
@@ -77,7 +78,7 @@ public class ItemControllerTest {
         Mockito.when(itemService.updateItem(1L, 1L, itemDto)).thenReturn(expected);
 
         String response = mockMvc.perform(patch("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
@@ -90,12 +91,12 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void updateItem_whenSharerUserIdIsNotOwner_thenForbidden() {
+    public void updateItemStatusCodeIsForbidden() {
         Mockito.when(itemService.updateItem(1L, 1L, itemDto))
                 .thenThrow(SecurityException.class);
 
         mockMvc.perform(patch("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isForbidden());
@@ -103,7 +104,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void getItemById() {
+    public void getItemByIdStatusCodeIsOkAndResponseAsExpected() {
         ItemBookingDto expected = ItemBookingDto.builder()
                 .id(1L)
                 .name("Camera")
@@ -114,7 +115,7 @@ public class ItemControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/items/1")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -125,7 +126,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void getItems() {
+    public void getItemsStatusCodeIsOkAndResponseAsExpected() {
         ItemBookingDto dto = ItemBookingDto.builder()
                 .id(1L)
                 .name("Camera")
@@ -137,7 +138,7 @@ public class ItemControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/items?from=0&size=3")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -149,7 +150,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void searchItems() {
+    public void searchItemsStatusCodeIsOkAndResponseAsExpected() {
         List<ItemDto> expected = List.of(ItemDto.builder()
                 .id(1L)
                 .name("Camera")
@@ -160,7 +161,7 @@ public class ItemControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(get("/items/search?text=Analog&from=0&size=1")
-                        .header("X-Sharer-User-Id", 1))
+                        .header(SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -172,7 +173,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    public void createComment() {
+    public void createCommentStatusCodeIsOkAndResponseAsExpected() {
         CommentDto toCreate = CommentDto.builder()
                 .text("Some text")
                 .itemId(1L)
@@ -188,7 +189,7 @@ public class ItemControllerTest {
                 .thenReturn(expected);
 
         String response = mockMvc.perform(post("/items/1/comment")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(SHARER_USER_ID, 1)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(toCreate)))
                 .andExpect(status().isOk())

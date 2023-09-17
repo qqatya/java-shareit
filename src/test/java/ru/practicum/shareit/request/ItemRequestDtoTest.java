@@ -22,7 +22,7 @@ public class ItemRequestDtoTest {
 
     @Test
     @SneakyThrows
-    void testItemDto() {
+    void convertItemDtoToJsonValuesAsExpected() {
         ItemRequestDto dto = ItemRequestDto.builder()
                 .id(1L)
                 .description("Description")

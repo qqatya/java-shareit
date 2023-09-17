@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Header.SHARER_USER_ID;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class ItemController {
      * @return Созданная вещь
      */
     @PostMapping
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    public ItemDto createItem(@RequestHeader(SHARER_USER_ID) Long ownerId,
                               @Validated(ItemCreate.class) @RequestBody ItemDto dto) {
         return itemService.createItem(dto, ownerId);
     }
@@ -42,7 +44,7 @@ public class ItemController {
      * @return Обновленная вещь
      */
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    public ItemDto updateItem(@RequestHeader(SHARER_USER_ID) Long ownerId,
                               @PathVariable Long id,
                               @RequestBody ItemDto dto) {
         return itemService.updateItem(ownerId, id, dto);
@@ -57,7 +59,7 @@ public class ItemController {
      */
     @GetMapping("/{id}")
     public ItemBookingDto getItemById(@PathVariable Long id,
-                                      @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                                      @RequestHeader(SHARER_USER_ID) Long ownerId) {
         return itemService.getItemById(id, ownerId);
     }
 
@@ -70,7 +72,7 @@ public class ItemController {
      * @return Список вещей
      */
     @GetMapping
-    public List<ItemBookingDto> getItems(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    public List<ItemBookingDto> getItems(@RequestHeader(SHARER_USER_ID) Long ownerId,
                                          @RequestParam(defaultValue = "10") @Min(1) Integer size,
                                          @RequestParam(defaultValue = "0") @Min(0) Integer from) {
         return itemService.getItems(ownerId, size, from);
@@ -102,7 +104,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@Valid @RequestBody CommentDto dto,
                                     @PathVariable Long itemId,
-                                    @RequestHeader("X-Sharer-User-Id") Long authorId) {
+                                    @RequestHeader(SHARER_USER_ID) Long authorId) {
         return itemService.createComment(dto, itemId, authorId);
     }
 

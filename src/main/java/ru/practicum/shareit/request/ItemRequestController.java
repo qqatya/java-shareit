@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Header.SHARER_USER_ID;
+
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class ItemRequestController {
      * @return Созданный запрос
      */
     @PostMapping
-    public ItemRequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDto createItemRequest(@RequestHeader(SHARER_USER_ID) Long userId,
                                             @Valid @RequestBody ItemRequestDto dto) {
         return itemRequestService.createItemRequest(userId, dto);
     }
@@ -37,7 +39,7 @@ public class ItemRequestController {
      * @return Список запросов
      */
     @GetMapping
-    public List<ItemRequestDto> getItemRequestsOfCurrentUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> getItemRequestsOfCurrentUser(@RequestHeader(SHARER_USER_ID) Long userId) {
         return itemRequestService.getItemRequestsByUserId(userId);
     }
 
@@ -50,7 +52,7 @@ public class ItemRequestController {
      * @return Список запросов
      */
     @GetMapping("/all")
-    public List<ItemRequestDto> getItemRequestsOfOtherUsers(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDto> getItemRequestsOfOtherUsers(@RequestHeader(SHARER_USER_ID) Long userId,
                                                             @RequestParam(defaultValue = "10") @Min(1) Integer size,
                                                             @RequestParam(defaultValue = "0") @Min(0) Integer from) {
         return itemRequestService.getItemRequestsOfOtherUsers(userId, size, from);
@@ -64,7 +66,7 @@ public class ItemRequestController {
      * @return Запрос вещи
      */
     @GetMapping("/{requestId}")
-    public ItemRequestDto getItemRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDto getItemRequestById(@RequestHeader(SHARER_USER_ID) Long userId,
                                              @PathVariable Long requestId) {
         return itemRequestService.getItemRequestById(userId, requestId);
     }

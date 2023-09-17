@@ -94,7 +94,7 @@ public class BookingServiceTest {
             .build();
 
     @Test
-    public void create_whenValid_thenSaves() {
+    public void createSavesBooking() {
         Mockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user2));
         Mockito.when(itemRepository.findById(anyLong()))
@@ -110,7 +110,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void create_whenInitiatorIsOwner_thenThrowsNotFoundException() {
+    public void createThrowsNotFoundException() {
         Mockito.when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user1));
         Mockito.when(itemRepository.findById(anyLong()))
@@ -122,7 +122,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void create_whenStartIsBeforeNow_thenThrowsBookingPeriodException() {
+    public void createThrowsBookingPeriodExceptionWhenStartIsBeforeNow() {
         BookingDto startBeforeNow = bookingDto;
         startBeforeNow.setStart(LocalDateTime.now().minusMinutes(1));
 
@@ -132,7 +132,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void create_whenEndIsBeforeStart_thenThrowsBookingPeriodException() {
+    public void createThrowsBookingPeriodExceptionWhenEndIsBeforeStart() {
         BookingDto endBeforeStart = bookingDto;
         endBeforeStart.setEnd(endBeforeStart.getStart().minusMinutes(1));
 
@@ -142,7 +142,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void create_whenEndEqualsStart_thenThrowsBookingPeriodException() {
+    public void createThrowsBookingPeriodExceptionWhenEndEqualsStart() {
         BookingDto endEqStart = bookingDto;
         endEqStart.setEnd(endEqStart.getStart());
 
@@ -152,7 +152,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void create_whenHasIntersectionsByBookingPeriod_thenThrowsNotFoundException() {
+    public void createThrowsNotFoundExceptionWhenHasIntersectionsByBookingPeriod() {
         Mockito.when(bookingRepository.findIntersections(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(List.of(new Booking()));
         Mockito.when(userRepository.findById(anyLong()))
@@ -166,7 +166,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void changeStatus_whenApprovedIsTrue_thenChangesStatusToApproved() {
+    public void changeStatusChangesStatusToApproved() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(Booking.builder().initiator(user2).item(item).build()));
 
@@ -178,7 +178,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void changeStatus_whenApprovedIsFalse_thenChangesStatusToRejected() {
+    public void changeStatusChangesStatusToRejected() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(Booking.builder().initiator(user2).build()));
 
@@ -190,7 +190,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void changeStatus_whenBookingNotFound_thenThrowsNotFoundException() {
+    public void changeStatusThrowsNotFoundExceptionWhenBookingNotFound() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(anyLong(), anyLong()))
                 .thenReturn(Optional.empty());
 
@@ -200,7 +200,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void changeStatus_whenTryingToApproveWhenBookingIsAlreadyApproved_thenThrowsUnsupportedOperationException() {
+    public void changeStatusThrowsUnsupportedOperationExceptionWhenTryingToApproveAlreadyApprovedBooking() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(Booking.builder().status(APPROVED).initiator(user2).build()));
 
@@ -210,7 +210,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingById_whenFound_thenReturnsTheBooking() {
+    public void getBookingByIdReturnsTheBooking() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerIdOrInitiatorId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(Booking.builder().status(APPROVED).initiator(user2).build()));
 
@@ -221,7 +221,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingById_whenNotFound_thenThrowsNotFoundException() {
+    public void getBookingByIdThrowsNotFoundExceptionWhenBookingNotFound() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerIdOrInitiatorId(anyLong(), anyLong()))
                 .thenReturn(Optional.empty());
 
@@ -231,7 +231,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchTypeIsALL_thenSearchingByInitiatorWithoutAdditionalCriteria() {
+    public void getBookingsByUserIdSearchingByAll() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
 
@@ -243,7 +243,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchTypeIsCurrent_thenSearchingByCurrent() {
+    public void getBookingsByUserIdSearchingByCurrent() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -257,7 +257,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchIsPast_thenSearchingByPast() {
+    public void getBookingsByUserIdSearchingByPast() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -271,7 +271,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchIsFuture_thenSearchingByFuture() {
+    public void getBookingsByUserIdSearchingByFuture() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -285,7 +285,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchIsWaiting_thenSearchingByWaiting() {
+    public void getBookingsByUserIdSearchingByWaiting() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -299,7 +299,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchIsRejected_thenSearchingByRejected() {
+    public void getBookingsByUserIdSearchingByRejected() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -313,7 +313,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenNotFound_thenThrowsNotFoundException() {
+    public void getBookingsByUserIdThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(false);
 
@@ -323,7 +323,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeIsALL_thenSearchingByInitiatorWithoutAdditionalCriteria() {
+    public void getBookingsByItemOwnerSearchingByAll() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
 
@@ -335,7 +335,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeIsCurrent_thenSearchingByCurrent() {
+    public void getBookingsByItemOwnerSearchingByCurrent() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -349,7 +349,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeIsPast_thenSearchingByPast() {
+    public void getBookingsByItemOwnerSearchingByPast() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -363,7 +363,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeIsFuture_thenSearchingByFuture() {
+    public void getBookingsByItemOwnerSearchingByFuture() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -377,7 +377,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeIsWaiting_thenSearchingByWaiting() {
+    public void getBookingsByItemOwnerSearchingByWaiting() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -391,7 +391,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeIsRejected_thenSearchingByRejected() {
+    public void getBookingsByItemOwnerSearchingByRejected() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -405,7 +405,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenNotFound_thenThrowsNotFoundException() {
+    public void getBookingsByItemOwnerThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(false);
 
@@ -415,7 +415,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByUserId_whenSearchTypeNotFound_thenThrowsNotFoundException() {
+    public void getBookingsByUserIdThrowsNotFoundExceptionWhenSearchTypeNotFound() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))
@@ -428,7 +428,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void getBookingsByItemOwner_whenSearchTypeNotFound_thenThrowsNotFoundException() {
+    public void getBookingsByItemOwnerThrowsNotFoundExceptionWhenSearchTypeNotFound() {
         Mockito.when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
         Mockito.when(bookingRepository.findAll(any(BooleanExpression.class), any(Pageable.class)))

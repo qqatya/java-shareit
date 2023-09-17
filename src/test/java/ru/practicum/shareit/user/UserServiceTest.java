@@ -42,7 +42,7 @@ public class UserServiceTest {
             .build();
 
     @Test
-    public void createUser_whenValid_thenCreates() {
+    public void createUserSavesUser() {
         Mockito.when(userMapper.mapToModel(userDto)).thenReturn(user);
 
         userService.createUser(userDto);
@@ -51,7 +51,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_whenFound_thenUpdates() {
+    public void updateUserUpdatesUser() {
         User existing = user;
         existing.setId(1L);
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
@@ -62,7 +62,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_whenNotFound_thenThrowsNotFoundException() {
+    public void updateUserThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -71,7 +71,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById_whenNotFound_thenThrowsNotFoundException() {
+    public void getUserByIdThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -80,7 +80,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteUserById() {
+    public void deleteUserByIdDeletesUser() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         userService.deleteUserById(1L);
 
@@ -88,7 +88,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteUserById_whenNotFound_thenThrowsNotFoundException() {
+    public void deleteUserByIdThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -97,7 +97,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getAllUsers() {
+    public void getAllUsersReturnsUsers() {
         userService.getAllUsers();
 
         verify(userRepository, times(1)).findAll();

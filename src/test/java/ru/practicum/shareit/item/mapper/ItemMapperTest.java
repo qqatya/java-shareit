@@ -62,7 +62,7 @@ public class ItemMapperTest {
             .build();
 
     @Test
-    public void mapToDto() {
+    public void mapToDtoCreatesDto() {
         ItemDto actual = itemMapper.mapToDto(item);
 
         assertEquals(actual.getId(), item.getId());
@@ -72,7 +72,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    public void mapToModel_withItemRequest() {
+    public void mapToModelCreatesModelContainingItemRequest() {
         ItemRequest request = ItemRequest.builder()
                 .id(1L)
                 .user(author)
@@ -90,7 +90,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    public void mapToModel() {
+    public void mapToModelCreatesModel() {
         ItemDto toUpdate = itemDto;
         toUpdate.setName("Upd");
         toUpdate.setAvailable(false);
@@ -102,7 +102,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    public void mapToItemBookingDto() {
+    public void mapToItemBookingDtoCreatesDto() {
         List<Comment> comments = List.of(Comment.builder().id(1L).text("Some text").item(item).author(author)
                         .createDttm(LocalDateTime.now()).build(),
                 Comment.builder().id(2L).text("Some text").item(item).author(author)
@@ -122,7 +122,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    public void mapToItemBookingDto_withBookings() {
+    public void mapToItemBookingDtoCreatesDtoContainingBookings() {
         List<Comment> comments = List.of(Comment.builder().id(1L).text("Some text").item(item).author(author)
                         .createDttm(LocalDateTime.now()).build(),
                 Comment.builder().id(2L).text("Some text").item(item).author(author)

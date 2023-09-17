@@ -118,7 +118,7 @@ public class ItemServiceTest {
             .build();
 
     @Test
-    public void createItem_whenValid_thenSaves() {
+    public void createItemSavesItem() {
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         Mockito.when(itemMapper.mapToModel(itemDto, user1, null))
@@ -130,7 +130,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createItem_whenUserNotFound_thenThrowsNotFoundException() {
+    public void createItemThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class, () -> itemService.createItem(itemDto, 1L));
@@ -138,7 +138,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createItem_WhenRequestNotFound_thenThrowsNotFoundException() {
+    public void createItemThrowsNotFoundExceptionWhenRequestNotFound() {
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
         Mockito.when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
         ItemDto withRequestId = itemDto;
@@ -150,7 +150,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void updateItem_whenFound_thenUpdates() {
+    public void updateItemUpdatesItem() {
         Item itemUpdated = item1;
         itemUpdated.setName("Updated camera");
         itemUpdated.setAvailable(false);
@@ -163,7 +163,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void updateItem_whenUpdatedNotByOwner_thenThrowsSecurityException() {
+    public void updateItemThrowsSecurityExceptionWhenUpdatedNotByOwner() {
         Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
 
         SecurityException e = assertThrows(SecurityException.class,
@@ -172,7 +172,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void updateItem_whenNotFound_thenThrowsNotFoundException() {
+    public void updateItemThrowsNotFoundExceptionWhenItemNotFound() {
         Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -181,7 +181,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void getItemById_whenFound_thenReturnsTheItem() {
+    public void getItemByIdReturnsItem() {
         Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
         Mockito.when(commentRepository.findByItemId(item1.getId())).thenReturn(List.of());
 
@@ -191,7 +191,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void getItemById_whenFoundAndRequestedByOwner_thenReturnsTheItemWithLastAndNextBooking() {
+    public void getItemByIdReturnsTheItemWithLastAndNextBookingWhenRequestedByOwner() {
         Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
         Mockito.when(commentRepository.findByItemId(item1.getId())).thenReturn(List.of());
         Mockito.when(bookingRepository.findLastByItemId(anyLong()))
@@ -205,7 +205,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void getItemById_whenNotFound_thenThrowsNotFoundException() {
+    public void getItemByIdThrowsNotFoundExceptionWhenItemNotFound() {
         Mockito.when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -214,7 +214,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void getItems_whenFound_thenReturnsTheItems() {
+    public void getItemsReturnsItems() {
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
         Mockito.when(itemRepository.getByOwnerId(1L, PageRequest.of(0, 1)))
                 .thenReturn(List.of(item1, item2));
@@ -233,7 +233,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void getItems_whenUserNotFound_thenThrowsNotFoundException() {
+    public void getItemsThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(false);
 
         NotFoundException e = assertThrows(NotFoundException.class,
@@ -243,7 +243,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createComment_whenUserAndItemFound_thenCreates() {
+    public void createCommentCreatesComment() {
         Mockito.when(bookingRepository.wasItemBookedByUser(anyLong(), anyLong())).thenReturn(true);
         Mockito.when(itemRepository.existsById(anyLong())).thenReturn(true);
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user2));
@@ -256,7 +256,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createComment_whenWansntBookedByAuthor_thenThrowsIllegalArgumentException() {
+    public void createCommentThrowsIllegalArgumentExceptionWhenWasntBookedByAuthor() {
         Mockito.when(bookingRepository.wasItemBookedByUser(anyLong(), anyLong())).thenReturn(false);
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
@@ -265,7 +265,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createComment_whenUserNotFound_thenThrowsNotFoundException() {
+    public void createCommentThrowsNotFoundExceptionWhenUserNotFound() {
         Mockito.when(bookingRepository.wasItemBookedByUser(anyLong(), anyLong())).thenReturn(true);
         Mockito.when(itemRepository.existsById(anyLong())).thenReturn(true);
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -277,7 +277,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createComment_whenItemNotFound_thenThrowsIllegalArgumentException() {
+    public void createCommentThrowsIllegalArgumentExceptionWhenItemNotFound() {
         Mockito.when(itemRepository.existsById(anyLong())).thenReturn(false);
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
@@ -286,7 +286,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void searchItems() {
+    public void searchItemsReturnsItems() {
         itemService.searchItems("Item", 1, 0);
 
         verify(itemRepository, times(1))
@@ -295,7 +295,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void searchItems_whenTextIsEmpty_thenReturnsEmptyList() {
+    public void searchItemsReturnsEmptyListWhenTextIsEmpty() {
         List<ItemDto> result = itemService.searchItems("", 1, 0);
 
         assertTrue(result.isEmpty());
