@@ -30,27 +30,31 @@ public interface ItemService {
     /**
      * Получение вещи по идентификатору
      *
-     * @param id      Идентификатор вещи
+     * @param id     Идентификатор вещи
      * @param userId Идентификатор пользователя
      * @return Вещь
      */
     ItemBookingDto getItemById(Long id, Long userId);
 
     /**
-     * Получение всех вещей по идентификатору владельца
+     * Постраничное получение всех вещей по идентификатору владельца
      *
      * @param ownerId Идентификатор владельца
+     * @param size    Количество элементов для отображения
+     * @param from    Индекс первого элемента
      * @return Список вещей
      */
-    List<ItemBookingDto> getAllItems(Long ownerId);
+    List<ItemBookingDto> getItems(Long ownerId, Integer size, Integer from);
 
     /**
-     * Поиск вещей
+     * Постраничный поиск вещей
      *
      * @param text Текст для поиска по названию/описанию
+     * @param size Количество элементов для отображения
+     * @param from Индекс первого элемента
      * @return Список найденных вещей
      */
-    List<ItemDto> searchItems(String text);
+    List<ItemDto> searchItems(String text, Integer size, Integer from);
 
     /**
      * Создание комментария

@@ -1,14 +1,16 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import ru.practicum.shareit.booking.model.Booking;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long>, QuerydslPredicateExecutor<Booking> {
 
     /**
      * Поиск бронирования по идентификатору и индентификатору владельца
@@ -37,7 +39,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @param itemId Идентификатор вещи
      * @return Список из бронирований по возрастанию даты начала
      */
-    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1  AND status = 'APPROVED' and start_dttm < now() ORDER BY start_dttm DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1 "
+            + "AND status = 'APPROVED' and start_dttm < now() ORDER BY start_dttm DESC LIMIT 1", nativeQuery = true)
     Optional<Booking> findLastByItemId(Long itemId);
 
     /**
@@ -46,7 +49,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @param itemId Идентификатор вещи
      * @return Список из бронирований по возрастанию даты начала
      */
-    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1  AND status = 'APPROVED' and start_dttm > now() ORDER BY start_dttm LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM bookings WHERE item_id = ?1 "
+            + "AND status = 'APPROVED' and start_dttm > now() ORDER BY start_dttm LIMIT 1", nativeQuery = true)
     Optional<Booking> findNextByItemId(Long itemId);
 
     /**
@@ -63,130 +67,19 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * Поиск бронирований по идентификатору инициатора бронирования
      *
      * @param initiatorId Идентификатор инициатора
+     * @param pageable    Параметры пагинации
      * @return Список бронирований
      */
-    List<Booking> findByInitiatorIdOrderByStartDttmDesc(Long initiatorId);
-
-    /**
-     * Поиск текущих бронирований по идентификатору инициатора бронирования
-     *
-     * @param currentDate Текущая дата (для сравнения границ периода бронирования)
-     * @param userId      Идентификатор пользователя
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.startDttm < ?1 AND b.endDttm > ?1 "
-            + "AND b.initiator.id = ?2 ORDER BY b.startDttm DESC")
-    List<Booking> findCurrent(LocalDateTime currentDate, Long userId);
-
-    /**
-     * Поиск завершенных бронирований по идентификатору инициатора бронирования
-     *
-     * @param currentDate Текущая дата (для сравнения границ периода бронирования)
-     * @param userId      Идентификатор пользователя
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status = 'APPROVED' AND b.endDttm < ?1 AND b.initiator.id = ?2 "
-            + "ORDER BY b.startDttm DESC")
-    List<Booking> findPast(LocalDateTime currentDate, Long userId);
-
-    /**
-     * Поиск будущих бронирований по идентификатору инициатора бронирования и статусу бронирования
-     *
-     * @param currentDate Текущая дата (для сравнения границ периода бронирования)
-     * @param userId      Идентификатор пользователя
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status != 'REJECTED' AND b.startDttm > ?1 AND b.initiator.id = ?2 "
-            + "ORDER BY b.startDttm DESC")
-    List<Booking> findFuture(LocalDateTime currentDate, Long userId);
-
-    /**
-     * Поиск бронирований в ожидании по идентификатору инициатора бронирования и статусу бронирования
-     *
-     * @param userId Идентификатор пользователя
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status = 'WAITING' AND b.initiator.id = ?1 ORDER BY b.startDttm DESC")
-    List<Booking> findWaiting(Long userId);
-
-    /**
-     * Поиск отклоненных бронирований по идентификатору инициатора бронирования и статусу бронирования
-     *
-     * @param userId Идентификатор пользователя
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status = 'REJECTED' AND b.initiator.id = ?1 ORDER BY b.startDttm DESC")
-    List<Booking> findRejected(Long userId);
-
+    List<Booking> findByInitiatorIdOrderByStartDttmDesc(Long initiatorId, Pageable pageable);
 
     /**
      * Получение списка бронирований для всех вещей по идентификатору владельца вещи
      *
-     * @param ownerId Идентификатор владельца
+     * @param ownerId  Идентификатор владельца
+     * @param pageable Параметры пагинации
      * @return Список бронирований
      */
-    List<Booking> findByItemOwnerIdOrderByStartDttmDesc(Long ownerId);
-
-    /**
-     * Получение списка текущих бронирований для всех вещей по идентификатору владельца вещи
-     *
-     * @param currentDate Текущая дата (для сравнения границ периода бронирования)
-     * @param ownerId     Идентификатор владельца
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.startDttm < ?1 AND b.endDttm > ?1 "
-            + "AND b.item.owner.id = ?2 ORDER BY b.startDttm DESC")
-    List<Booking> findCurrentByOwnerId(LocalDateTime currentDate, Long ownerId);
-
-    /**
-     * Получение списка завершенных бронирований для всех вещей по идентификатору владельца вещи
-     *
-     * @param currentDate Текущая дата (для сравнения границ периода бронирования)
-     * @param ownerId     Идентификатор владельца
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status = 'APPROVED' AND b.endDttm < ?1 AND b.item.owner.id = ?2 "
-            + "ORDER BY b.startDttm DESC")
-    List<Booking> findPastByOwnerId(LocalDateTime currentDate, Long ownerId);
-
-    /**
-     * Получение списка будущих бронирований для всех вещей по идентификатору владельца вещи
-     *
-     * @param currentDate Текущая дата (для сравнения границ периода бронирования)
-     * @param ownerId     Идентификатор владельца
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status != 'REJECTED' AND b.startDttm > ?1 AND b.item.owner.id = ?2 "
-            + "ORDER BY b.startDttm DESC")
-    List<Booking> findFutureByOwnerId(LocalDateTime currentDate, Long ownerId);
-
-    /**
-     * Получение списка бронирований в ожидании для всех вещей по идентификатору владельца вещи
-     *
-     * @param ownerId Идентификатор владельца
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status = 'WAITING' AND b.item.owner.id = ?1 ORDER BY b.startDttm DESC")
-    List<Booking> findWaitingByOwnerId(Long ownerId);
-
-    /**
-     * Получение списка отклоненных бронирований для всех вещей по идентификатору владельца вещи
-     *
-     * @param ownerId Идентификатор владельца
-     * @return Список бронирований
-     */
-    @Query("SELECT b from Booking b "
-            + "WHERE b.status = 'REJECTED' AND b.item.owner.id = ?1 ORDER BY b.startDttm DESC")
-    List<Booking> findRejectedByOwnerId(Long ownerId);
+    List<Booking> findByItemOwnerIdOrderByStartDttmDesc(Long ownerId, Pageable pageable);
 
     /**
      * Проверка, была ли вещь забронирована пользователем
@@ -198,4 +91,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT count(b) > 0 FROM Booking b "
             + "WHERE b.item.id = ?1 AND b.initiator.id = ?2 AND b.status != 'REJECTED' AND b.endDttm < now()")
     Boolean wasItemBookedByUser(Long itemId, Long userId);
+
 }

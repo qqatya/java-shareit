@@ -40,16 +40,20 @@ public interface BookingService {
      *
      * @param state  Статус бронирований
      * @param userId Идентификатор пользователя
+     * @param size   Количество элементов для отображения
+     * @param from   Индекс первого элемента
      * @return Список бронирований
      */
-    List<BookingDto> getBookingsByUserId(BookingSearchType state, Long userId);
+    List<BookingDto> getBookingsByUserId(BookingSearchType state, Long userId, Integer size, Integer from);
 
     /**
      * Получение списка бронирований для всех вещей по идентификатору владельца вещи
      *
      * @param state   Статус бронирований
      * @param ownerId Идентификатор владельца
+     * @param size    Количество элементов для отображения
+     * @param from    Индекс первого элемента
      * @return Список бронирований
      */
-    List<BookingDto> getBookingsByItemOwner(BookingSearchType state, Long ownerId);
+    List<BookingDto> getBookingsByItemOwner(BookingSearchType state, Long ownerId, Integer size, Integer from);
 }

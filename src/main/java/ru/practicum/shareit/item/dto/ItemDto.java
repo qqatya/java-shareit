@@ -21,4 +21,6 @@ public class ItemDto {
 
     @NotNull(groups = ItemCreate.class)
     private Boolean available;
+
+    private Long requestId;
 }
