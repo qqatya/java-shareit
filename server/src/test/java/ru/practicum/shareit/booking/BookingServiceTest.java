@@ -166,6 +166,28 @@ public class BookingServiceTest {
     }
 
     @Test
+    public void createThrowsNotFoundExceptionWhenUserNotFound() {
+        Mockito.when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> bookingService.create(bookingDto, 2L));
+        assertEquals("Не найден пользователь с id = 2", e.getMessage());
+    }
+
+    @Test
+    public void createThrowsNotFoundExceptionWhenItemNotFound() {
+        Mockito.when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user2));
+        Mockito.when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> bookingService.create(bookingDto, 2L));
+        assertEquals("Не найдена вещь с id = 1", e.getMessage());
+    }
+
+    @Test
     public void changeStatusChangesStatusToApproved() {
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(Booking.builder().initiator(user2).item(item).build()));
@@ -398,7 +420,7 @@ public class BookingServiceTest {
                 .thenReturn(Page.empty());
         Long userId = 1L;
 
-        bookingService.getBookingsByItemOwner(WAITING, userId, 1, 0);
+        bookingService.getBookingsByItemOwner(REJECTED, userId, 1, 0);
 
         verify(bookingRepository, times(1))
                 .findAll(any(BooleanExpression.class), any(Pageable.class));
