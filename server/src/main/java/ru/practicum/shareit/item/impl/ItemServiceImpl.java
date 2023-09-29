@@ -117,7 +117,7 @@ public class ItemServiceImpl implements ItemService {
         int page = from != 0 ? from / size : from;
         Pageable pageable = PageRequest.of(page, size);
 
-        return itemRepository.getByOwnerId(ownerId, pageable).stream()
+        return itemRepository.getByOwnerIdOrderByIdAsc(ownerId, pageable).stream()
                 .map(i -> itemMapper.mapToItemBookingDto(i, commentRepository.findByItemId(i.getId()),
                         bookingRepository.findLastByItemId(i.getId()).orElse(null),
                         bookingRepository.findNextByItemId(i.getId()).orElse(null)))

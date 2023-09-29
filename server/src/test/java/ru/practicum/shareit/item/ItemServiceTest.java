@@ -216,7 +216,7 @@ public class ItemServiceTest {
     @Test
     public void getItemsReturnsItems() {
         Mockito.when(userRepository.existsById(anyLong())).thenReturn(true);
-        Mockito.when(itemRepository.getByOwnerId(1L, PageRequest.of(0, 1)))
+        Mockito.when(itemRepository.getByOwnerIdOrderByIdAsc(1L, PageRequest.of(0, 1)))
                 .thenReturn(List.of(item1, item2));
         Mockito.when(commentRepository.findByItemId(anyLong())).thenReturn(List.of());
         Mockito.when(bookingRepository.findLastByItemId(anyLong()))
@@ -227,7 +227,7 @@ public class ItemServiceTest {
         itemService.getItems(1L, 1, 0);
 
         verify(itemRepository, times(1))
-                .getByOwnerId(1L, PageRequest.of(0, 1));
+                .getByOwnerIdOrderByIdAsc(1L, PageRequest.of(0, 1));
         verify(itemMapper, times(1)).mapToItemBookingDto(item1, List.of(), booking1, booking2);
         verify(itemMapper, times(1)).mapToItemBookingDto(item2, List.of(), booking1, booking2);
     }

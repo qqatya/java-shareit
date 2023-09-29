@@ -75,7 +75,7 @@ public class ItemRepositoryTest {
     public void getByOwnerIdReturnsItems() {
         List<Item> expected = List.of(item1, item2);
 
-        List<Item> actual = itemRepository.getByOwnerId(user.getId(), PageRequest.of(0, 2));
+        List<Item> actual = itemRepository.getByOwnerIdOrderByIdAsc(user.getId(), PageRequest.of(0, 2));
 
         assertEquals(expected, actual);
     }

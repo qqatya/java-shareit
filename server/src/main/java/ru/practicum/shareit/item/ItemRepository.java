@@ -15,7 +15,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param pageable Параметры пагинации
      * @return Список вещей
      */
-    List<Item> getByOwnerId(Long ownerId, Pageable pageable);
+    List<Item> getByOwnerIdOrderByIdAsc(Long ownerId, Pageable pageable);
 
     /**
      * Получение всех вещей, содержащих в названии/описании текст из аргумента метода
